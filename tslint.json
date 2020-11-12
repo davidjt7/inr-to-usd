@@ -1,0 +1,25 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint-config-airbnb",
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "src/config/**/*.{ts,js}",
+      "node_modules/**/*.ts",
+      "db/**/*.{ts,js}"
+    ]
+  },
+  "jsRules": {},
+  "rules": {
+    "arrow-parens": false,
+    "import-name": false,
+    "object-literal-sort-keys": false,
+    "no-trailing-whitespace": true,
+    "variable-name": [true, "allow-leading-underscore"],
+    "interface-name": [true, "never-prefix"]
+  },
+  "rulesDirectory": []
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "build",
+    "target": "es6",
+    "allowJs": true,
+    "declaration": false,
+    "noImplicitAny": false,
+    "inlineSourceMap": false,
+    "noEmitOnError": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules"],
+  "include": ["src/**/*", "src/config/**/*"]
+}
