@@ -27,7 +27,6 @@ async function convertCSVToJSON(csvFilePath: string) {
         const result = array.data.flat();
         const cleanedResult = result.filter((value) => !isNaN(value)).map(Number);
         const sorted = cleanedResult.sort();
-        console.log(sorted)
         let sum = 0, count = 0;
         for (const item of sorted) {
             sum += item;
