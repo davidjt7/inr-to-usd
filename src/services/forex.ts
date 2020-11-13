@@ -25,10 +25,25 @@ async function convertCSVToJSON(csvFilePath: string) {
         const csvString = dataString.substring(0, dataString.length - 1)
         const array = await Papa.parse(csvString);
         const result = array.data.flat();
-        const cleanedResult = result.filter((value) => value !== "").map(Number);
+        const cleanedResult = result.filter((value) => !isNaN(value)).map(Number);
+        const sorted = cleanedResult.sort();
+        console.log(sorted)
+        let sum = 0, count = 0;
+        for (const item of sorted) {
+            sum += item;
+            count++;
+        }
+        const mean = sum / count;
+        const median = computeMedian(sorted);
+        const minimum = sorted[0];
+        const maximum = sorted[sorted.length - 1];
 
         return {
-            amountsInINR: cleanedResult
+            amountsInINR: sorted,
+            mean,
+            median,
+            minimum,
+            maximum
         };
     } catch (error) {
         throw error.message;
@@ -44,3 +59,18 @@ export {
     convertINRToUSD,
     convertCSVToJSON,
 };
+
+function computeMedian(values) {
+    if (values.length === 0) return 0;
+
+    values.sort(function (a, b) {
+        return a - b;
+    });
+
+    var half = Math.floor(values.length / 2);
+
+    if (values.length % 2)
+        return values[half];
+
+    return (values[half - 1] + values[half]) / 2.0;
+}
