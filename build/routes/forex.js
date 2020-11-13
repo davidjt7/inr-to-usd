@@ -12,9 +12,11 @@ const forexRouter = express_1.Router({
 });
 const forexRouters = {
     inrAmount: "/convert/:INR",
-    csvToJson: "/csv"
+    csvToJson: "/csv",
+    mail: "/mail"
 };
 forexRouter.get(forexRouters.inrAmount, forex_1.getUSD);
+forexRouter.post(forexRouters.mail, forex_1.mailResults);
 forexRouter.post(forexRouters.csvToJson, upload.single('inr'), forex_1.getAmountsInINR);
 exports.default = forexRouter;
 //# sourceMappingURL=forex.js.map

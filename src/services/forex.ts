@@ -1,7 +1,8 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
-import Papa from 'papaparse';
 import nodemailer from 'nodemailer';
+import Papa from 'papaparse';
+import logger from '../utils/logger';
 
 async function convertINRToUSD(amount: number) {
     try {
@@ -21,8 +22,8 @@ async function convertINRToUSD(amount: number) {
 
 async function sendMail(req) {
     try {
-        let testAccount = await nodemailer.createTestAccount();
-        let transporter = nodemailer.createTransport({
+        const testAccount = await nodemailer.createTestAccount();
+        const transporter = nodemailer.createTransport({
             host: "smtp.ethereal.email",
             port: 587,
             secure: false, // true for 465, false for other ports
@@ -79,7 +80,7 @@ async function sendMail(req) {
             <p>Mean: ${req.body.mean}</p> <p>Median: ${req.body.median}</p><p> Minimum: ${req.body.minimum}</p> <p>Maximum: ${req.body.maximum}</p>
             `, // html body
         });
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        logger.info("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         return;
     } catch (error) {
         throw error.message;
@@ -93,24 +94,24 @@ async function convertCSVToJSON(csvFilePath: string) {
         const csvString = dataString.substring(0, dataString.length - 1)
         const array = await Papa.parse(csvString);
         const result = array.data.flat();
-        const cleanedResult = result.filter((value) => !isNaN(value)).map(Number);
-        const sorted = cleanedResult.sort();
-        let sum = 0, count = 0;
-        for (const item of sorted) {
+        const cleanedResult = result.filter((value) => !isNaN(value)).map(Number).sort();
+        let sum = 0;
+        let count = 0;
+        for (const item of cleanedResult) {
             sum += item;
-            count++;
+            count = count + 1;
         }
         const mean = sum / count;
-        const median = computeMedian(sorted);
-        const minimum = sorted[0];
-        const maximum = sorted[sorted.length - 1];
+        const median = computeMedian(cleanedResult);
+        const minimum = cleanedResult[0];
+        const maximum = cleanedResult[cleanedResult.length - 1];
 
         return {
-            amountsInINR: sorted,
             mean,
             median,
             minimum,
-            maximum
+            maximum,
+            amountsInINR: cleanedResult,
         };
     } catch (error) {
         throw error.message;
@@ -128,17 +129,20 @@ export {
     sendMail
 };
 
-function computeMedian(values) {
-    if (values.length === 0) return 0;
+const computeMedian = (values) => {
+    if (values.length === 0) {
+        return 0;
+    }
 
-    values.sort(function (a, b) {
+    values.sort((a, b) => {
         return a - b;
     });
 
-    var half = Math.floor(values.length / 2);
+    const half = Math.floor(values.length / 2);
 
-    if (values.length % 2)
+    if (values.length % 2) {
         return values[half];
+    }
 
     return (values[half - 1] + values[half]) / 2.0;
 }

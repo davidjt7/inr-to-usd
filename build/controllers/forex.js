@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAmountsInINR = exports.getUSD = void 0;
+exports.mailResults = exports.getAmountsInINR = exports.getUSD = void 0;
 const models_1 = __importDefault(require("../models"));
 const forex_1 = require("../services/forex");
 const response_helper_1 = require("../utils/response_helper");
@@ -27,6 +27,16 @@ const getUSD = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUSD = getUSD;
+const mailResults = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield forex_1.sendMail(req);
+        return response_helper_1.successResponse(res)({ msg: "Success" });
+    }
+    catch (error) {
+        return response_helper_1.errorResponse(res)(error);
+    }
+});
+exports.mailResults = mailResults;
 const getAmountsInINR = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield forex_1.convertCSVToJSON(req.file.path);
