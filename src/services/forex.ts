@@ -1,6 +1,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import Papa from 'papaparse';
+import nodemailer from 'nodemailer';
 
 async function convertINRToUSD(amount: number) {
     try {
@@ -13,6 +14,73 @@ async function convertINRToUSD(amount: number) {
             timestamp,
             amount: json.rates.USD * amount,
         };
+    } catch (error) {
+        throw error.message;
+    }
+}
+
+async function sendMail(req) {
+    try {
+        let testAccount = await nodemailer.createTestAccount();
+        let transporter = nodemailer.createTransport({
+            host: "smtp.ethereal.email",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: testAccount.user, // generated ethereal user
+                pass: testAccount.pass, // generated ethereal password
+            },
+        });
+
+        // send mail with defined transport object
+        const info = await transporter.sendMail({
+            from: '"Fred Foo" <foo@example.com>', // sender address
+            to: req.body.receiver, // list of receivers
+            subject: "INR To USD Conversion Results", // Subject line
+            text: "Results", // plain text body
+            html: `
+            <style>
+            #results {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+            #results td, #results th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            }
+
+            #results tr:nth-child(even){background-color: #f2f2f2;}
+
+            #results tr:hover {background-color: #ddd;}
+
+            #results th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+            }
+            p { color: #4c4a37; font-family: 'Source Sans Pro', sans-serif; font-size: 18px; line-height: 32px; margin: 0 0 24px; }
+            </style>
+            <table id="results">
+                <th>Date</th>
+                <th>INR</th>
+                <th>USD</th>
+            ${req.body.rows.map((row) => {
+                return `<tr>
+                  <td>${row.date.substr(0, 25)}</td>
+                  <td>${row.inr}</td>
+                  <td>${row.usd}</TableCell>
+                </tr>`;
+            })}
+            </table>
+            <p>Mean: ${req.body.mean}</p> <p>Median: ${req.body.median}</p><p> Minimum: ${req.body.minimum}</p> <p>Maximum: ${req.body.maximum}</p>
+            `, // html body
+        });
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        return;
     } catch (error) {
         throw error.message;
     }
@@ -57,6 +125,7 @@ async function convertCSVToJSON(csvFilePath: string) {
 export {
     convertINRToUSD,
     convertCSVToJSON,
+    sendMail
 };
 
 function computeMedian(values) {

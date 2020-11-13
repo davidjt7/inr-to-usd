@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import DB from "../models";
-import { convertCSVToJSON, convertINRToUSD } from "../services/forex";
+import { convertCSVToJSON, convertINRToUSD, sendMail } from "../services/forex";
 import { errorResponse, successResponse } from "../utils/response_helper";
 
 const getUSD = async (req: Request, res: Response) => {
@@ -8,6 +8,15 @@ const getUSD = async (req: Request, res: Response) => {
     const inrAmount = parseInt(req.params.INR, 10);
     const result = await convertINRToUSD(inrAmount);
     return successResponse(res)(result);
+  } catch (error) {
+    return errorResponse(res)(error);
+  }
+};
+
+const mailResults = async (req: Request, res: Response) => {
+  try {
+    await sendMail(req);
+    return successResponse(res)({msg:"Success"});
   } catch (error) {
     return errorResponse(res)(error);
   }
@@ -34,4 +43,5 @@ const getAmountsInINR = async (req, res: Response) => {
 export {
     getUSD,
     getAmountsInINR,
+    mailResults,
 };

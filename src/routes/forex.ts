@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from 'multer';
-import { getAmountsInINR, getUSD } from "../controllers/forex";
+import { getAmountsInINR, getUSD,mailResults } from "../controllers/forex";
 
 const upload = multer({dest: 'tmp'});
 
@@ -10,12 +10,18 @@ const forexRouter = Router({
 
 const forexRouters = {
   inrAmount: "/convert/:INR",
-  csvToJson: "/csv"
+  csvToJson: "/csv",
+  mail: "/mail"
 };
 
 forexRouter.get(
   forexRouters.inrAmount,
   getUSD
+);
+
+forexRouter.post(
+  forexRouters.mail,
+  mailResults
 );
 
 forexRouter.post(
