@@ -1,7 +1,7 @@
 {
-  "name": "url-shortener",
+  "name": "inr-to-usd",
   "version": "1.0.0",
-  "description": "Backend for URL Shortener",
+  "description": "Backend for INR to USD",
   "main": "server.js",
   "author": "David Joseph Thomas",
   "private": "true",
