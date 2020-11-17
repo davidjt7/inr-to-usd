@@ -1,6 +1,6 @@
-# Url Shortener Backend
+# INR to USD
 
-A basic url shortener backend built with TypeScript that uses a PostgreSQL database
+A basic inr to usd backend built with TypeScript that uses a PostgreSQL database to save requests
 
 # Requirements
 
